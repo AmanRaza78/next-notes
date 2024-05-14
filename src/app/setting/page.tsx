@@ -10,8 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import CardWithForm from "@/components/card-form";
 
-export default function Dashboard() {
+export default function Setting() {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
@@ -117,14 +118,14 @@ export default function Dashboard() {
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
+            <h1 className="text-lg font-semibold md:text-2xl">Setting</h1>
           </div>
           <div
             className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
             x-chunk="dashboard-02-chunk-1"
           >
             <div className="flex flex-col items-center gap-1 text-center">
-              Dashboard
+                <CardWithForm/>
             </div>
           </div>
         </main>
