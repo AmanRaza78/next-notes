@@ -16,6 +16,18 @@ model User {
   stripeCustomerId String? @unique
   colorScheme String @default("theme-orange")
   createdAt DateTime   @default(now())
+  note Note[]
 }
 
 
+model Note{
+    id          String @id @default(uuid())
+    title String
+    description String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userId String?
+    user User? @relation(fields: [userId], references: [id])
+
+}

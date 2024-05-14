@@ -10,7 +10,7 @@ const SubmitButton = () => {
       {pending ? (
         <Button disabled>Please Wait</Button>
       ) : (
-        <Button type="submit">Update</Button>
+        <Button type="submit">Save</Button>
       )}
     </>
   );

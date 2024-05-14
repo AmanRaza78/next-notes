@@ -1,55 +1,66 @@
 import Link from "next/link";
-import {
-  Home,
-  Menu,
-  Settings,
-  CreditCard,
-  File,
-  Edit,
-  Trash,
-} from "lucide-react";
+import { Home, Menu, Settings, CreditCard} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { revalidatePath } from "next/cache";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import SubmitButton from "@/components/submit-button";
+import { redirect } from "next/navigation";
 
-async function getData(userId: string) {
-  const data = await prisma.note.findMany({
-    where: {
-      userId: userId,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-  return data;
+async function getData(userId:string, noteId:string){
+    const data = await prisma.note.findUnique({
+        where:{
+            userId:userId,
+            id:noteId
+        },
+        select:{
+            title:true,
+            description:true,
+            id:true
+        }
+    })
+    return data
 }
 
-export default async function Dashboard() {
+
+export default async function UpdateNote({params}:{params:{id:string}}) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-  const data = await getData(user?.id as string);
+  const data = await getData(user?.id as string, params.id)
 
-  async function deleteNote(formData:FormData){
+  async function updateData(formData:FormData){
     "use server"
-    const noteId = formData.get('noteId') as string
+    const title = formData.get("title") as string
+    const description = formData.get('description') as string
 
-    await prisma.note.delete({
-      where:{
-        id:noteId
-      }
+    await prisma.note.update({
+        where:{
+            id:data?.id,
+            userId:user?.id
+        },
+        data:{
+            title: title,
+            description:description
+        }
     })
-    revalidatePath('/dashboard')
+    return redirect('/dashboard')
   }
+
+
+
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
@@ -109,69 +120,49 @@ export default async function Dashboard() {
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
+            <h1 className="text-lg font-semibold md:text-2xl">Create Notes</h1>
           </div>
           <div
             className="flex flex-col flex-1 rounded-lg border border-dashed shadow-sm p-6 gap-y-6"
             x-chunk="dashboard-02-chunk-1"
           >
-            <div className="flex justify-between items-center">
-              <h1 className="font-bold text-3xl">Your Notes</h1>
-              <Link href="/newNote">
-                <Button>Create Notes</Button>
-              </Link>
-            </div>
-            <div>
-              <p className="text-muted">
-                Here you can see and create your notes
-              </p>
-            </div>
+            <Card>
+              <form action={updateData}>
+                <CardHeader>
+                  <CardTitle>New Note</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-y-3">
+                  <div className="gap-y-2 flex flex-col">
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      required
+                      type="text"
+                      name="title"
+                      id="title"
+                      placeholder="Title of your note"
+                      defaultValue={data?.title ?? ''}
+                    />
+                  </div>
 
-            {data.length < 1 ? (
-              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center gap-y-2">
-                <div>
-                  <File className="w-10 h-10 text-primary" />
-                </div>
-                <h3 className="font-semibold">
-                  You don't have any notes created yet
-                </h3>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-y-4">
-                {data.map((item) => (
-                  <Card
-                    key={item.id}
-                    className="flex items-center justify-between p-4"
-                  >
-                    <div>
-                      <h2 className="font-semibold text-xl text-primary">
-                        {item.title}
-                      </h2>
-                      <p>
-                        {new Intl.DateTimeFormat("en-US", {
-                          dateStyle: "full",
-                        }).format(new Date(item.createdAt))}
-                      </p>
-                    </div>
-
-                    <div className="flex gap-x-4">
-                      <Link href={`/newNote/${item.id}`}>
-                        <Button variant="outline" size="icon">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </Link>
-
-                      <form action={deleteNote}>
-                        <input type="hidden" name="noteId" value={item.id}/>
-                        <Button variant="destructive" size="icon">
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                      </form>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            )}
+                  <div className="gap-y-2 flex flex-col">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      required
+                      name="description"
+                      id="description"
+                      placeholder="Description of your note"
+                      defaultValue={data?.description ?? ''}
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                    <Link href="/dashboard">
+                        <Button variant="destructive">Cancel</Button>
+                    </Link>
+                    <SubmitButton/>
+                </CardFooter>
+              </form>
+            </Card>
           </div>
         </main>
       </div>
