@@ -1,7 +1,6 @@
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { NextResponse } from "next/server";
-
+import { redirect } from "next/navigation";
 export async function GET(){
     const {getUser} = getKindeServerSession()
     const user = await getUser()
@@ -26,10 +25,10 @@ export async function GET(){
             }
         })
 
-        return NextResponse.redirect('http://localhost:3000/dashboard')
+        return redirect('/dashboard')
     }
     else{
-        return NextResponse.redirect("http://localhost:3000/dashboard")
+        return redirect('/dashboard')
     }
 
 

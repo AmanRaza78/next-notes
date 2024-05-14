@@ -5,5 +5,5 @@ export default function middleware(req:any) {
   });
 }
 export const config = {
-  matcher: ["/dashboard", "/setting"]
+  matcher: ["/dashboard", "/setting", "/newNote/:id*"]
 };
