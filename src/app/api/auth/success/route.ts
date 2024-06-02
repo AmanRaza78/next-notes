@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import {unstable_noStore as noStore} from "next/cache"
+import { NextResponse } from "next/server";
 export async function GET(){
     noStore()
     const {getUser} = getKindeServerSession()
@@ -26,12 +27,9 @@ export async function GET(){
                 email:user.email??""
             }
         })
+    }
 
-        return redirect('/dashboard')
-    }
-    else{
-        return redirect('/dashboard')
-    }
+    return NextResponse.redirect(process.env.NODE_ENV==="development" ? "http://localhost:3000/": "https://nextnotes-pink.vercel.app/")
 
 
 }
