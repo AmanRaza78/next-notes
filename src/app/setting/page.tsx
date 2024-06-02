@@ -2,17 +2,12 @@ import Link from "next/link";
 import { Home, Menu, Settings, CreditCard } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import CardWithForm from "@/components/card-form";
+import {unstable_noStore as noStore} from "next/cache"
 
 export default function Setting() {
+  noStore()
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
