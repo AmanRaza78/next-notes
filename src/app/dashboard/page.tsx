@@ -133,7 +133,7 @@ export default async function Dashboard() {
                   <File className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="font-semibold">
-                  You don't have any notes created yet
+                  You do not have any notes created yet
                 </h3>
               </div>
             ) : (
